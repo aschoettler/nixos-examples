@@ -9,6 +9,7 @@
     nixd
     ripgrep
     fd
+    just
   ];
 
   programs.git = {

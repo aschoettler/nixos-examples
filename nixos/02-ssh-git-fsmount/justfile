@@ -1,0 +1,6 @@
+
+alias rb := rebuild
+
+rebuild:
+    sudo nixos-rebuild switch --flake .#nixos --show-trace
+

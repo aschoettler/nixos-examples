@@ -11,6 +11,18 @@
     };
     efi.canTouchEfiVariables = true;
   };
+  fileSystems."/mnt/utm" = {
+    device = "share";
+    fsType = "9p";
+    options = [
+      "trans=virtio"
+      "version=9p2000.L"
+      "rw"
+      "_netdev"
+      "nofail"
+      "auto"
+    ];
+  };
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
@@ -57,6 +69,24 @@
 
   # allow vscode to run unpatched binaries
   # programs.nix-ld.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    bindfs
+  ];
+
+  systemd.services.shared-mount = {
+    description = "Mount shared folder with bindfs";
+    wantedBy = [ "multi-user.target" ];
+    requires = [ "mnt-utm.mount" ];
+    serviceConfig = {
+      Type = "forking";
+      # sudo bindfs --map=501/1001:@20/@100 /mnt/utm /mnt/utm
+      # run `id` on host & guest to get uid / gid values
+      # GUIDE: https://dev.to/franzwong/mount-share-folder-in-qemu-with-same-permission-as-host-2980
+      ExecStart = "${pkgs.bindfs}/bin/bindfs --map=501/1001:@20/@100 /mnt/utm /mnt/utm";
+      # Restart = "on-failure";
+    };
+  };
 
   system.stateVersion = "25.11";
 }

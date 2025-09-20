@@ -1,0 +1,142 @@
+# OneDark Vibrant
+# A high-contrast modification of EricHenry's "Zed OneDark" theme.
+
+"attribute" = { fg = "yellow" }
+"comment" = { fg = "comment", modifiers = ["italic"] }
+"constant" = { fg = "yellow" }
+"constant.numeric" = { fg = "orange" }
+"constant.builtin" = { fg = "yellow" }
+"constant.builtin.boolean" = { fg = "orange" }
+"constant.character.escape" = { fg = "cyan" }
+"constructor" = { fg = "blue" }
+"function" = { fg = "blue" }
+"function.builtin" = { fg = "cyan" }
+"function.method" = { fg = "blue" }
+"function.macro" = { fg = "purple" }
+"keyword" = { fg = "purple" }
+"label" = { fg = "fg" }
+"namespace" = { fg = "yellow", modifiers = ["italic"] }
+"operator" = { fg = "fg" }
+"punctuation" = { fg = "fg" }
+"special" = { fg = "cyan" }
+"string" = { fg = "green" }
+# "string.start" = { fg = "purple" }    # doesn't work
+# "string.end" = { fg = "purple" }    # doesn't work
+"type" = { fg = "yellow" }
+"variable.builtin" = { fg = "red" }
+"variable.parameter" = { fg = "fg" }
+"variable.other.member" = { fg = "red" }
+
+"markup.heading" = { fg = "red", underline = { color = "red", style = "line" }, modifiers = ["bold"] }
+"markup.heading.marker" = { fg = "pink", modifiers = ["bold"] }
+"markup.raw.inline" = { fg = "green" }
+"markup.raw.block.language" = { fg = "blue" }
+"markup.bold" = { fg = "yellow", modifiers = ["bold"] }
+"markup.italic" = { fg = "purple", modifiers = ["italic"] }
+"markup.strikethrough" = { modifiers = ["crossed_out"] }
+"markup.list" = { fg = "red" }
+"markup.quote" = { fg = "comment", modifiers = ["italic"] }
+"markup.link.url" = { fg = "purple", modifiers = ["underlined"] }
+"markup.link.text" = { fg = "blue" }
+
+"diff.plus" = "green"
+"diff.delta" = "yellow"
+"diff.minus" = "red"
+
+"diagnostic.info".underline = { color = "blue", style = "curl" }
+"diagnostic.hint".underline = { color = "green", style = "curl" }
+"diagnostic.warning".underline = { color = "yellow", style = "curl" }
+"diagnostic.error".underline = { color = "red", style = "curl" }
+"diagnostic.unnecessary" = { modifiers = ["dim"] }
+"diagnostic.deprecated" = { modifiers = ["crossed_out"] }
+"info" = { fg = "blue", modifiers = ["bold"] }
+"hint" = { fg = "green", modifiers = ["bold"] }
+"warning" = { fg = "yellow", modifiers = ["bold"] }
+"error" = { fg = "red", modifiers = ["bold"] }
+
+"ui.background" = { bg = "bg00" }
+"ui.gutter" = { bg = "bg0" }
+"ui.virtual" = { fg = "comment" }
+"ui.virtual.indent-guide" = { fg = "bg2" }
+"ui.virtual.whitespace" = { fg = "bg2" }
+"ui.virtual.ruler" = { bg = "bg2" }
+"ui.virtual.inlay-hint" = { fg = "blue", bg = "bg2", modifiers = ["bold"] }
+"ui.virtual.jump-label" = { fg = "purple", modifiers = ["bold", "italic"] }
+
+"ui.cursor" = { fg = "bg0", bg = "fg_dim" }
+# "ui.cursor.primary" = { fg = "bg0", bg = "fg" }
+"ui.cursor.primary" = { fg = "bg0", bg = "#CCADE4" }
+"ui.cursor.match" = { fg = "blue", modifiers = ["underlined", "bold"] }
+
+"ui.selection" = { bg = "bg_selection" }
+"ui.statusline" = { fg = "fg", bg = "bg_accent" }
+"ui.selection.primary" = { bg = "bg_selection" }
+"ui.cursorline.primary" = { bg = "bg1" }
+
+"ui.highlight" = { bg = "bg2" }
+"ui.highlight.frameline" = { bg = "purple" }
+
+"ui.linenr" = { fg = "fg_gutter" }
+"ui.linenr.selected" = { fg = "fg", modifiers = ["bold"] }
+
+"ui.statusline.inactive" = { fg = "comment", bg = "bg1" }
+"ui.statusliine.normal" = { fg = "bg1", bg = "blue" }
+"ui.statusline.insert" = { fg = "bg1", bg = "green" }
+"ui.statusline.select" = { fg = "bg1", bg = "purple" }
+
+"ui.bufferline" = { fg = "fg", bg = "bg0" }
+"ui.bufferline.active" = { fg = "purple", bg = "bg1", underline = { color = "purple", style = "line" } }
+"ui.bufferline.background" = { bg = "bg00" }
+
+
+"ui.text" = { fg = "fg" }
+"ui.text.focus" = { fg = "fg", bg = "bg_selection", modifiers = ["bold"] }
+
+"ui.help" = { fg = "fg", bg = "bg1" }
+"ui.popup" = { bg = "bg1" }
+"ui.window" = { fg = "bg2" }
+"ui.menu" = { fg = "fg", bg = "bg1" }
+"ui.menu.selected" = { fg = "bg0", bg = "blue" }
+"ui.menu.scroll" = { fg = "fg", bg = "bg2" }
+
+"ui.debug" = { fg = "red" }
+
+[palette]
+# Base UI Colors
+# bg_dark_purple = "#0F051B" # new ghostty background
+
+
+# darker background
+bg00 = "#11111C"
+# Dark Background
+bg0 = "#1A1B26"
+# Slightly Lighter Background (Popups, Cursorline)
+bg1 = "#24283B"
+# Lighter Background (Guides, Rulers)
+bg2 = "#2F3443"
+# Selection Highlight
+bg_selection = "#2D4F67"
+# Default Foreground Text
+fg = "#DCDFE4"
+fg_dim = "#ABB3BF"
+# Line Numbers
+fg_gutter = "#4F586A"
+# Comments
+comment = "#6A737D"
+bg_accent = "#223249"
+
+# Syntax Colors (Vibrant)
+
+red = "#F84F4E"
+green = "#32B327"
+yellow = "#E0BB1D"
+blue = "#3891FA"
+purple = "#D628F7"
+cyan = "#00C4C1"
+pink = "#FC7CB7"
+orange = "#EA830C"
+
+
+# todo:
+# - statusline # DONE
+# - markdown heading underline

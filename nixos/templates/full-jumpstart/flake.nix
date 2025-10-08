@@ -51,6 +51,18 @@
           home-manager-module = inputs.home-manager-stable.nixosModules.home-manager;
           system_builder = inputs.nixos-stable.lib.nixosSystem;
         };
+        "x86_64-linux".unstable = {
+          system = "x86_64-linux";
+          nixpkgs = inputs.nixos-unstable;
+          home-manager-module = inputs.home-manager-unstable.nixosModules.home-manager;
+          system_builder = inputs.nixos-unstable.lib.nixosSystem;
+        };
+        "x86_64-linux".stable = {
+          system = "x86_64-linux";
+          nixpkgs = inputs.nixos-stable;
+          home-manager-module = inputs.home-manager-stable.nixosModules.home-manager;
+          system_builder = inputs.nixos-stable.lib.nixosSystem;
+        };
         "aarch64-darwin".unstable = {
           system = "aarch64-darwin";
           nixpkgs = inputs.nixos-unstable;
@@ -102,12 +114,9 @@
             home-manager
             htop
             iputils
-            iputils
             just
             lsof
-            lsof
             nixfmt-rfc-style
-            openssh
             openssh
             openssl
             ripgrep
@@ -116,7 +125,6 @@
             tmux
             vim
             wget
-
             # (fenix.complete.withComponents [ "rustc" "cargo" "rust-src" "clippy" "rustfmt" ])
           ];
           services.nixos-cli.enable = true;
@@ -124,15 +132,16 @@
           # allow vscode (and other programs) to run unpatched binaries:
           # programs.nix-ld.enable = true;
 
+          programs.zsh.enable = true;
           # shell completions for system packages
           environment.pathsToLink = [ "/share/zsh" ];
         };
       nixosModules.ai =
-        { ... }:
+        { pkgs, ... }:
         {
-          environment.systemPackages = [
-            inputs.nix-ai-tools.gemini-cli
-            inputs.nix-ai-tools.code # github.com/just-every/code a fork of openai codex
+          environment.systemPackages = with inputs.nix-ai-tools.packages.${pkgs.system}; [
+            gemini-cli
+            # code # github.com/just-every/code a fork of openai codex
           ];
         };
       # NOTE: Must run this command once for every user:
@@ -159,8 +168,8 @@
           # CHANGE ME
           # Import your harware-configuration.nix here (or in some other module):
           # imports = [ /etc/nixos/hardware-configuration.nix ];
-          # boot.loader.grub.enable = true;
-          # boot.loader.grub.device = "/dev/sda";
+          boot.loader.systemd-boot.enable = true;
+          boot.loader.efi.canTouchEfiVariables = true;
 
           # Basic system configuration
           time.timeZone = "UTC";
@@ -441,6 +450,7 @@
 
           # Home modules from flakes:
           self.homeModules.shell
+          self.homeModules.helix
           inputs.helix-customization.homeModules.onedark-vibrant
 
           # An explicit home module:
@@ -505,6 +515,7 @@
 
             # An explicit nixos module:
             {
+              networking.hostName = "alpha"; # Define your hostname
               virtualisation.docker.enable = true; # docker
               # devcontainer.enable = true; # devcontainer CLI
             }

@@ -1,0 +1,36 @@
+# justfile for nix configurations
+
+hostname := shell('hostname -s')
+
+alias rb := rebuild
+alias ts := test
+
+_default:
+    just --list
+
+### MAIN FUNCTIONS
+
+# rebuild home-manager configuration for current user (searches `outputs.homeConfigurations.*`)
+home:
+    # home-manager switch --flake .#user
+    home-manager switch --flake .
+
+# rebuild nixos for current host
+rebuild:
+    just _rebuild_{{hostname}}
+    just home
+
+# build & activate current host but don't update bootloader
+test:
+    just _test_{{hostname}}
+
+
+### HOST-SPECIFIC
+
+## Alpha
+_rebuild_alpha:
+    sudo nixos-rebuild --flake .#alpha --show-trace --print-build-logs switch
+
+_test_alpha:
+    sudo nixos-rebuild --flake .#alpha --show-trace --print-build-logs --no-reexec test
+

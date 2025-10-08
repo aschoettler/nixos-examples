@@ -1,41 +1,44 @@
 # Jumpstart Flake
 
-This flake contains
+This flake contains several nixos & home-manager modules to get your brand new system up and runnign with a handfull of developer tools.
+The flake is organized into several nixos modules which can be added / removed individually from the `nixosConfigurations.*` settings for your system.
 
-# Usage
+## 0. Download This Flake:
 
-Download me!
+    nix flake init -t 'github:aschoettler/nixos-examples?dir=nixos#full'
 
-```bash
-# Download this flake and sibling files:
-nix flake init -t 'github:aschoettler/nixos-examples?dir=nixos#full'
-```
+## 1. Hardware Configuration
 
-Source the shell script (useful before your config enables flakes)
+    # Copy your existing configuration.nix & hardware-configuration.nix
+    cp /etc/nixos/*configuration.nix .
 
-```bash
-# Source the shell script until you have flakes enabled via config
-. ./nixenv.sh
-```
+    # OR regenerate it here
+    nixos-generate-config --dir .
 
-**Update the flake with your architecture, hostname, username, and hardware configuration**:
+## 2. Enable flakes via alias
 
-```bash
-# Edit the flake
-nixf shell nixpkgs#vim && vi flake.nix
-```
+Source the shell script until your config enables flakes:
+
+    # create `nixf` alias
+    # alias nixf="nix --extra-experimental-features 'nix-command flakes'"
+    . ./nixenv.sh
+
+## 3. Update the flake with your username, hostname, and architecture
+
+    # use the alias
+    nixf shell nixpkgs#vim
 
 Search for "CHANGE ME" in the flake:
 
-- Change `"aarch64-linux"` to your architecture
-- Change the hostname `alpha` to your desired hostname
-- Change the username `user` to your username **IMPORTANT**
-- Import `hardware-configuration.nix` -OR- run `nixos-generate-config --dir .` and add import the local version.
+- Replace `"user"` with your username
+- Replace `"aarch64-linux"` to your architecture
+- Replace `"alpha"` with your hostname
 
-# Building
+# 4. Apply the configuration
 
-Use `just rebuild` or `just test`.
+    # On the first run, specify your hostname:
+    sudo nixos-rebuild --flake .#<hostname> -L --show-trace switch
+    home-manager --flake .#<username> switch
 
-Test for syntax errors / nix build-time errors without touching the system:
-
-    nix build -L .#nixosConfigurations.alpha.config.system.build.toplevel
+    # After the first run:
+    just rebuild

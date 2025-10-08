@@ -4,33 +4,37 @@ hostname := shell('hostname -s')
 
 alias rb := rebuild
 alias ts := test
+alias rbh := rebuild-host
 
 _default:
     just --list
 
 ### MAIN FUNCTIONS
 
-# rebuild home-manager configuration for current user (searches `outputs.homeConfigurations.*`)
+# Rebuild & activate nixos configuration for the current system and update the bootloader.
+rebuild:
+    sudo nixos-rebuild --flake .#{{hostname}} --show-trace --print-build-logs switch
+    just home
+
+# Rebuild home-manager configuration for current user.
 home:
+    # This searches flake outputs `homeConfigurations.*`
     # home-manager switch --flake .#user
     home-manager switch --flake .
 
-# rebuild nixos for current host
-rebuild:
-    just _rebuild_{{hostname}}
-    just home
-
-# build & activate current host but don't update bootloader
+# Build & activate current host but don't update bootloader.
 test:
-    just _test_{{hostname}}
+    sudo nixos-rebuild --flake .#{{hostname}} --show-trace --print-build-logs --no-reexec test
 
+# Build `HOST`'s configuration without touching the system and put the built files in `./result/`
+validate HOST:
+    nix build -L .#nixosConfigurations.{{HOST}}.config.system.build.toplevel
 
-### HOST-SPECIFIC
+### HOST-SPECIFIC FUNCTIONS
 
-## Alpha
-_rebuild_alpha:
-    sudo nixos-rebuild --flake .#alpha --show-trace --print-build-logs switch
+# Invoke another function specific to this host
+rebuild-host:
+    just _rebuild-{{hostname}}
 
-_test_alpha:
-    sudo nixos-rebuild --flake .#alpha --show-trace --print-build-logs --no-reexec test
-
+_rebuild-alpha:
+    sudo nixos-rebuild --flake .#{{hostname}} --show-trace dry-build

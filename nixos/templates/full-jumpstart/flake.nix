@@ -21,18 +21,23 @@
       inputs.nixpkgs.follows = "nixos-unstable";
     };
     nix-ld.url = "github:nix-community/nix-ld";
+
     # Things for rust development
     naersk.url = "github:nix-community/naersk";
     fenix.url = "github:nix-community/fenix";
+
     # ai tools
     just-every-code.url = "github:just-every/code";
     nix-ai-tools.url = "github:numtide/nix-ai-tools";
+
     # Other
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     flake-utils.url = "github:numtide/flake-utils";
+
     # cli tool `nixos` useful for browsing options
     nixos-cli.url = "github:nix-community/nixos-cli";
-    # Personal
+
+    # helix theme
     helix-customization.url = "github:aschoettler/nixos-examples?dir=dots/helix";
   };
   outputs =
@@ -82,9 +87,8 @@
         import matrixEntry.nixpkgs ({ inherit (matrixEntry) system; } // nixpkgsConfig)
       );
 
-      # CHANGE ME
-      # Replace "aarch64-linux" with your architecture
       # Defining "pkgs" at this scope allows it to be re-used in homeConfigurations and nixosConfugurations.
+      # CHANGE ME: set your architecture
       pkgs-alpha = pkgsFor matrix."aarch64-linux".unstable {
         config.allowUnfree = true;
         overlays = [
@@ -96,7 +100,6 @@
     in
     {
       # NIXOS MODULES
-      # Feel free to modify / add / remove any `nixosModules.*` block or copy-paste their contents to your own module files (called via `imports = [ ... ]`)
       nixosModules.packages =
         { pkgs, ... }:
         {
@@ -140,16 +143,16 @@
         { pkgs, ... }:
         {
           environment.systemPackages = with inputs.nix-ai-tools.packages.${pkgs.system}; [
-            gemini-cli
+            # gemini-cli
             # code # github.com/just-every/code a fork of openai codex
           ];
         };
-      # NOTE: Must run this command once for every user:
-      #     systemctl --user enable auto-fix-vscode-server.service
-      # https://github.com/nix-community/nixos-vscode-server
       nixosModules.vscode-server =
         { ... }:
         {
+          # NOTE: Must run this command once for every user:
+          #     systemctl --user enable auto-fix-vscode-server.service
+          # https://github.com/nix-community/nixos-vscode-server
           imports = [ inputs.vscode-server.nixosModules.default ];
           services.vscode-server.enable = true;
         };
@@ -160,20 +163,7 @@
             "nix-command"
             "flakes"
           ];
-          system.stateVersion = "24.11";
-        };
-      nixosModules.system =
-        { ... }:
-        {
-          # CHANGE ME
-          # Import your harware-configuration.nix here (or in some other module):
-          # imports = [ /etc/nixos/hardware-configuration.nix ];
-          boot.loader.systemd-boot.enable = true;
-          boot.loader.efi.canTouchEfiVariables = true;
-
-          # Basic system configuration
-          time.timeZone = "UTC";
-          i18n.defaultLocale = "en_US.UTF-8";
+          system.stateVersion = "25.05";
         };
       nixosModules.starter-user =
         { pkgs, ... }:
@@ -203,9 +193,11 @@
         { ... }:
         {
           networking = {
+            # CHANGE ME: delete these lines if using wifi:
             useNetworkd = true;
-            useDHCP = true;
             networkmanager.enable = false;
+
+            useDHCP = true;
             firewall.enable = true;
           };
           # Enable IP Forwarding
@@ -437,38 +429,44 @@
       # Standalone Home Manager configurations (usable with: `home-manager switch --flake .#<user>`)
       # Declaration of `homeManagerConfiguration`: https://github.com/nix-community/home-manager/blob/master/lib/default.nix
       # Docs: https://nix-community.github.io/home-manager/index.xhtml#sec-upgrade-release-understanding-flake
-      homeConfigurations.user = inputs.home-manager-unstable.lib.homeManagerConfiguration {
-        pkgs = pkgs-alpha;
-        modules = [
-          # CHANGE ME (optional)
+      # CHANGE ME: set username `homeConfigurations.<your-username> = ...`
+      homeConfigurations.user =
+        let
+          # CHANGE ME: set username again
+          username = "user";
+        in
+        inputs.home-manager-unstable.lib.homeManagerConfiguration {
+          pkgs = pkgs-alpha;
+          modules = [
+            # CHANGE ME (optional): Add more home-manager modules as follows:
 
-          # A folder containing a home module file `default.nix`
-          # ./per-user/user
+            # ./per-user/user # A folder containing a home module file `default.nix`
+            # ./per-user/user/home.nix # A home module in a file:
 
-          # A home module in a file:
-          # ./per-user/user/home.nix
+            # Home modules from flakes:
+            self.homeModules.shell
+            self.homeModules.helix
+            inputs.helix-customization.homeModules.onedark-vibrant
 
-          # Home modules from flakes:
-          self.homeModules.shell
-          self.homeModules.helix
-          inputs.helix-customization.homeModules.onedark-vibrant
+            # An explicit home module:
+            (
+              { pkgs, ... }:
+              {
+                home.packages = with pkgs; [
+                  # curl
+                  # gnused
+                  # jq
+                ];
 
-          # An explicit home module:
-          (
-            { pkgs, ... }:
-            {
-              home.packages = with pkgs; [
-                curl
-                gnused
-                jq
-              ];
-              home.stateVersion = "25.05";
-              programs.home-manager.enable = true;
-            }
-          )
-        ];
-        extraSpecialArgs = { };
-      };
+                programs.home-manager.enable = true;
+                home.username = username;
+                home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
+                home.stateVersion = "25.05";
+              }
+            )
+          ];
+          extraSpecialArgs = { };
+        };
 
       overlays.default = final: prev: {
         inherit (import inputs.nixos-unstable { system = prev.stdenv.system; })
@@ -484,8 +482,7 @@
 
       nixosConfigurations.alpha =
         let
-          # CHANGE ME
-          # Replace "aarch64-linux" with your architecture
+          # CHANGE ME: set system architecture
           system = "aarch64-linux";
           inherit (matrix.${system}.unstable) system_builder;
           pkgs = pkgs-alpha;
@@ -494,20 +491,21 @@
           inherit system pkgs;
           specialArgs = { };
           modules = [
-            # CHANGE ME (optional)
+            # CHANGE ME: import hardware-configuration.nix here OR indirectly from another module
+            # ./hardware-configuration.nix
 
-            # A file path to a nixos module
-            # /etc/nixos/configuration.nix
+            # CHANGE ME: import configuration.nix here OR indirectly from another module OR just ignore it
+            # ./configuration.nix
 
-            # A directory containing a `default.nix` nixos module
-            # ./per-host/alpha
+            # CHANGE ME (optional): Add more nixos modules as follows:
+
+            # ./per-host/alpha # A directory containing a `default.nix` nixos module
 
             # nixos modules from flakes:
             self.nixosModules.packages
             self.nixosModules.ai
             self.nixosModules.vscode-server
             self.nixosModules.nix
-            self.nixosModules.system
             self.nixosModules.starter-user
             self.nixosModules.networking
             # self.nixosModules.darwin-default
@@ -516,15 +514,10 @@
             # An explicit nixos module:
             {
               networking.hostName = "alpha"; # Define your hostname
-              virtualisation.docker.enable = true; # docker
+              # virtualisation.docker.enable = true; # enable docker
               # devcontainer.enable = true; # devcontainer CLI
             }
           ];
         };
-
-      templates.basic = {
-        description = "Minimal NixOS flake with Home Manager enabled";
-        path = ./templates/basic;
-      };
     };
 }

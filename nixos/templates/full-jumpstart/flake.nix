@@ -88,7 +88,8 @@
       );
 
       # Defining "pkgs" at this scope allows it to be re-used in homeConfigurations and nixosConfugurations.
-      # CHANGE ME: set your architecture
+      # CHANGE ME: replace `alpha` with your hostname
+      # CHANGE ME: replace "aarch65-linux" with your architecture
       pkgs-alpha = pkgsFor matrix."aarch64-linux".unstable {
         config.allowUnfree = true;
         overlays = [
@@ -436,6 +437,7 @@
           username = "user";
         in
         inputs.home-manager-unstable.lib.homeManagerConfiguration {
+          # CHANGE ME: replace `alpha` with your hostname
           pkgs = pkgs-alpha;
           modules = [
             # CHANGE ME (optional): Add more home-manager modules as follows:
@@ -480,11 +482,13 @@
           ;
       };
 
+      # CHANGE ME: replace `alpha` with your hostname
       nixosConfigurations.alpha =
         let
-          # CHANGE ME: set system architecture
+          # CHANGE ME: replace "aarch64-linux" with your architecture
           system = "aarch64-linux";
           inherit (matrix.${system}.unstable) system_builder;
+          # CHANGE ME: replace `alpha` with your hostname
           pkgs = pkgs-alpha;
         in
         system_builder {
@@ -513,6 +517,7 @@
 
             # An explicit nixos module:
             {
+              # CHANGE ME: replace `alpha` with your hostname
               networking.hostName = "alpha"; # Define your hostname
               # virtualisation.docker.enable = true; # enable docker
               # devcontainer.enable = true; # devcontainer CLI

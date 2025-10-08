@@ -2,8 +2,9 @@
   outputs =
     { self }:
     {
-      ### This nixos module imports all the themes in the ./helix-themes folder. Home manager will symlink them under ~/.config/helix/themes/.
-      ### Once you've imported the module, set `programs.helix.theme = "onedark-vibrant"`
+      # This home-manager module makes all the themes in the ./helix-themes folder available to helix.
+      # Home manager will symlink them under ~/.config/helix/themes/.
+      # Add this module to your home-manager imports then set `programs.helix.settings.theme = "onedark-vibrant"`
       homeModules.helix-themes =
         { lib, ... }:
         let
@@ -31,6 +32,14 @@
           config = {
             programs.helix.themes = themes;
           };
+        };
+      # This home-manager module imoprts and applies the "onedark-vibrant" theme
+      homeModules.onedark-vibrant =
+        { lib, ... }:
+        {
+          imports = [ self.homeModules.helix-themes ];
+          programs.helix.enable = true;
+          programs.helix.settings.theme = lib.mkDefault "onedark-vibrant";
         };
     };
 }

@@ -154,11 +154,11 @@
     "helix-customization": {
       "locked": {
         "dir": "dots/helix",
-        "lastModified": 1759898296,
-        "narHash": "sha256-cvtUhyaoIX+molmqlbMHyTeLFmNKToGpVsaduPaRL74=",
+        "lastModified": 1759974131,
+        "narHash": "sha256-XEczUawDDHdsIPIEFwszEYaefUUKJinqrsIVPa/iF04=",
         "owner": "aschoettler",
         "repo": "nixos-examples",
-        "rev": "c75084ab55ba1814c81211c50a15685f573202ae",
+        "rev": "58c75152d5546f0129770248dd689f782dc5a066",
         "type": "github"
       },
       "original": {

@@ -169,6 +169,7 @@
       nixosModules.starter-user =
         { pkgs, ... }:
         {
+          # CHANGE ME: set username
           users.users."user" = {
             isNormalUser = true;
             extraGroups = [
@@ -181,22 +182,24 @@
             initialPassword = "password";
             openssh.authorizedKeys.keys = [ "ssh-ed25519 <your_ssh_key_here>" ];
           };
+          # CHANGE ME: set username
           services.getty.autologinUser = "user";
-          services.openssh.enable = true;
-          services.openssh.settings = {
-            PermitRootLogin = "yes";
-            PasswordAuthentication = false;
-            KbdInteractiveAuthentication = false;
+          services.openssh = {
+            enable = true;
+            settings.PermitRootLogin = "yes";
+            settings.PasswordAuthentication = false;
+            settings.KbdInteractiveAuthentication = false;
+            extraConfig = "AcceptEnv TERM_PROGRAM_VERSION TERM_PROGRAM TERM COLORTERM";
           };
           networking.firewall.allowedTCPPorts = [ 22 ];
         };
       nixosModules.networking =
-        { ... }:
+        { lib, ... }:
         {
           networking = {
             # CHANGE ME: delete these lines if using wifi:
             useNetworkd = true;
-            networkmanager.enable = false;
+            networkmanager.enable = lib.mkDefault false;
 
             useDHCP = true;
             firewall.enable = true;
@@ -228,6 +231,12 @@
               MANPAGER = ''sh -c \"col -bx | ${pkgs.bat}/bin/bat -l man -p\"'';
               MANROFFOPT = "-c";
             };
+            initExtra = ''
+              # Enable truecolor except for macOS Terminal and Linux console
+              if [[ "$TERM_PROGRAM" != "Apple_Terminal" && "$TERM" != "linux" ]]; then
+                  export COLORTERM=truecolor
+              fi
+            '';
           };
           programs.starship = {
             enable = true;

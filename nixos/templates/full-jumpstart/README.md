@@ -34,7 +34,7 @@ Search for "CHANGE ME" in the flake:
 - Replace `"aarch64-linux"` to your architecture
 - Replace `"alpha"` with your hostname
 
-# 4. Apply the configuration
+## 4. Apply the configuration
 
     # On the first run, specify your hostname:
     sudo nixos-rebuild --flake .#<hostname> -L --show-trace switch

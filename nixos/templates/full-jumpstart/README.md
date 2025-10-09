@@ -5,7 +5,7 @@ The flake is organized into several nixos modules which can be added / removed i
 
 ## 0. Download This Flake:
 
-    nix flake init -t 'github:aschoettler/nixos-examples?dir=nixos#full'
+    nix --extra-experimental-features 'nix-command flakes' flake init -t 'github:aschoettler/nixos-examples?dir=nixos#full'
 
 ## 1. Hardware Configuration
 

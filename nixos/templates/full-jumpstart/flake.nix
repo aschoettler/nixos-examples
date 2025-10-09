@@ -183,7 +183,7 @@
             openssh.authorizedKeys.keys = [ "ssh-ed25519 <your_ssh_key_here>" ];
           };
           # CHANGE ME: set username
-          services.getty.autologinUser = "user";
+          # services.getty.autologinUser = pkgs.lib.mkDefault "user";
           services.openssh = {
             enable = true;
             settings.PermitRootLogin = "yes";
@@ -197,7 +197,7 @@
         { lib, ... }:
         {
           networking = {
-            # CHANGE ME: delete these lines if using wifi:
+            # CHANGE ME: comment out these lines if using wifi:
             useNetworkd = true;
             networkmanager.enable = lib.mkDefault false;
 
@@ -505,14 +505,15 @@
           specialArgs = { };
           modules = [
             # CHANGE ME: import hardware-configuration.nix here OR indirectly from another module
-            # ./hardware-configuration.nix
+            ./hardware-configuration.nix
 
             # CHANGE ME: import configuration.nix here OR indirectly from another module OR just ignore it
             # ./configuration.nix
 
             # CHANGE ME (optional): Add more nixos modules as follows:
 
-            # ./per-host/alpha # A directory containing a `default.nix` nixos module
+            # ./hosts/alpha # A directory containing a `default.nix` nixos module
+            # ./hosts/alpha/configuration.nix # A nix module in a file
 
             # nixos modules from flakes:
             self.nixosModules.packages

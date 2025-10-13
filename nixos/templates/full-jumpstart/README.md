@@ -31,14 +31,41 @@ Source the shell script until your config enables flakes:
 Search for "CHANGE ME" in the flake:
 
 - Replace `"user"` with your username
-- Replace `"aarch64-linux"` to your architecture
+- Replace `"aarch64-linux"` with your architecture
 - Replace `"alpha"` with your hostname
 
 ## 4. Apply the configuration
 
-    # On the first run, specify your hostname:
+    # Before your first reboot, you must specify your hostname:
     sudo nixos-rebuild --flake .#<hostname> -L --show-trace switch
     home-manager --flake .#<username> switch
 
-    # After the first run:
+    # After you install `just` and have the correct hostname:
     just rebuild
+
+## 5. Fix rebuild errors
+
+If the rebuild fails because of "conflicting values" or a value defined in multiple places, its because the flake configured one of a few settings already defined in your `configuration.nix` or `hardware-configuration.nix`.
+
+- -> Fix these errors by commenting out the offending lines from `configuration.nix` or `harwdware-configuration.nix`. The error will say which file is conflicting.
+
+You'll probably need to fix the following:
+
+- `networking.useDHCP` in `hardware-configuration.nix` -> comment this out (redundant with flake)
+- `networking.networkmanager.enable = true` in `configuration.nix` -> comment this out (conflicts with default flake settings)
+- `networking.hostName = "nixos"` in `configuration.nix` -> comment this out (conflicts with flake)
+- `nixpkgs.config.*` in `configuration.nix` -> comment this out (conflicts with the way flake constructs & configures nixpkgs)
+
+# Background
+
+**Why do I need to comment those lines?**
+
+- Running `sudo nixos-rebuild --flake .#alpha switch` will gracefully fail when two different nix modules (different nix files) define the same setting, like `networking.useDHCP`, when the value is a literal string, boolean, or integer.
+
+**Why does the flake defines those things in the first place?**
+
+- Networking: I think it's nice to have all the networking settings in one place.
+- Hostname: Your hostname should be consistent across the 4-5 places in the flake where it occurs.
+  - `nixosConfigurations.alpha` should match `networking.hostName = "alpha"` because `sudo nixos-rebuild --flake . switch` looks for nixosConfigurations with your hostname.
+  - `pkgs-alpha` is a local variable in the flake you can think of as an "instance" of nixpkgs for your system. It includes your system architecture, unfree settings, and "overlays". This flake constructs `pkgs-alpha` once and passes it as an argument to `inputs.home-manager-unstable.lib.homeManagerConfiguration` for homeConfigurations and `system_builder` for nixosConfigurations. There are other ways to configure nixpkgs, but this way aligns pkgs between home-manager and your system while still allowing you to rebuild your home and system configurations independently.
+- `nixpkgs.config`: This is a different way to configure nixpkgs, incompatible with this flake.
